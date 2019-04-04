@@ -1,29 +1,30 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  4 05:53:18 2019
+
+@author: Yan
+"""
+
 
 import re
 import json
-import sys
-sys.path.append('/home/nancyyan/nancy/pythoncode/sinaWeibo')
 import base64
 import binascii
 import rsa
 import requests
-from config import WBCLIENT, USER_AGENT
-from config import USER_NAME, PASSWD
-from logger import logger
-
-session = requests.session()
-session.headers['User-Agent'] = USER_AGENT
+from config import WBCLIENT, USER_AGENT,USER_NAME, PASSWD
 
 
-def encrypt_passwd(passwd, pubkey, servertime, nonce):
+def _password(password, pubkey, servertime, nonce):
     key = rsa.PublicKey(int(pubkey, 16), int('10001', 16))
-    message = str(servertime) + '\t' + str(nonce) + '\n' + str(passwd)
+    message = str(servertime) + '\t' + str(nonce) + '\n' + str(password)
     passwd = rsa.encrypt(message.encode('utf-8'), key)
     return binascii.b2a_hex(passwd)
 
+def weibo_login():
+    session = requests.session()
+    session.headers['User-Agent'] = USER_AGENT
 
-def wblogin():
     username = USER_NAME
     password = PASSWD
     resp = session.get(
@@ -49,7 +50,7 @@ def wblogin():
         'vsnf': 1,
         'vsnval': '',
         'pwencode': 'rsa2',
-        'sp': encrypt_passwd(password, pre_login['pubkey'],
+        'sp': _password(password, pre_login['pubkey'],
                              pre_login['servertime'], pre_login['nonce']),
         'rsakv': pre_login['rsakv'],
         'encoding': 'UTF-8',
@@ -63,20 +64,15 @@ def wblogin():
     resp = session.post(login_url_list, data=data)
     match_obj = re.search('replace\\(\'([^\']+)\'\\)', resp.text)
     if match_obj is None:
-        logger.info('登录失败，请检查登录信息')
+        print('Login failed')
         return (session, None)
 
     login_url = match_obj.group(1)
     resp = session.get(login_url)
     login_str = login_str = re.search('\((\{.*\})\)', resp.text).group(1)
     login_info = json.loads(login_str)
-    logger.info("login success：[%s]" % str(login_info))
+    print("login success：[%s]" % str(login_info))
     uniqueid = login_info["userinfo"]["uniqueid"]
     return (session, uniqueid)
 
 
-if __name__ == '__main__':
-    pass
-    (http, uid) = wblogin()
-    text = http.get('http://weibo.com/').text
-    print(text)

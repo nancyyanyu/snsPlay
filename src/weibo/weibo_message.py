@@ -2,11 +2,9 @@
 
 import os
 
-class WeiboMessage(object):
-    """weibo message struct"""
+class Message(object):
 
     def __init__(self, text, images=None):
-        super(WeiboMessage, self).__init__()
         self.text = text if text is not None else ""
         self.images = images
 

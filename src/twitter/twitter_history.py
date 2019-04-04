@@ -9,7 +9,7 @@ import tweepy
 import os
 import pandas as pd
 from twitter_init import TweetScrape
-from logger import *
+from config import *
 
 class History(TweetScrape):
     def __init__(self,hashtags=None,lots=False,vi=True,pic=True,twt=True):
