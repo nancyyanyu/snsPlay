@@ -55,6 +55,3 @@ Please firstly check [example.py](https://github.com/nancyyanyu/SNSPlay/blob/mas
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details
 
-## Reference
-
-Sending Weibo module of the project was based on the work of Zibin Zhang https://github.com/zhangzibin/sinaWeibo. Thanks to his work!
